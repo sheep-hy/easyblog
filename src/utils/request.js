@@ -2,9 +2,11 @@
 // 1. 基地址
 // 2. 请求拦截器
 // 3.响应拦截器
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { ElLoading, ElMessage } from 'element-plus'
-const contentTypeForm = 'applycation/x-www-form-urlencoded;charset=UTF-8'
+import axios from 'axios'
+import { ElLoading } from 'element-plus'
+import message from '@/utils/Message'
+import router from '../router/index'
+const contentTypeForm = 'application/x-www-form-urlencoded;charset=UTF-8'
 const contentTypJson = 'applycation/json'
 const contentTypeFile = 'multipart/form-data'
 const request = (config) => {
@@ -58,10 +60,11 @@ const request = (config) => {
         // 如果展示loading 同时loading不等于null是 关闭loading效果
         loading.close()
       }
-      ElMessage({
-        message: '发送请求失败',
-        type: 'error',
-      })
+      // ElMessage({
+      //   message: '发送请求失败',
+      //   type: 'error',
+      // })
+      message.error('发送请求失败')
       return Promise.reject(error)
     }
   )
@@ -72,9 +75,27 @@ const request = (config) => {
       if (showLoading && loading) {
         loading.close()
       }
-
+      console.log(response, 'response')
       const responseData = response.data
-      return response
+      if (responseData.status === 'error') {
+        // 把错误信息报出来
+        if (config.errorCallback) {
+          config.errorCallback();
+        }
+        return Promise.reject(responseData.info)
+      } else {
+        if (responseData.code === 200) {
+          return responseData
+        } else if (responseData.code === 901) {
+          setTimeout(()=>{
+            //回到登录页面
+            router.push('/login')
+          },2000)
+          return Promise.reject('登录超时')
+        }
+
+      }
+      // return Promise.reject(error)
     },
     // 在响应错误之前做些什么
     // AxiosError<类型参数> 类型参数用于指定 data的类型
@@ -91,25 +112,23 @@ const request = (config) => {
     }
   )
   // 对请求封装 都封装成post
-  // return instance.post(url, params).catch((error) => {
-  //   ElMessage({
-  //     message: error,
-  //     type: 'error',
-  //   })
-  //   return null;
-  // })
-  // 一直不resolve 不reject 卡住了
-  let result = new Promise((resolve, reject) => {
-    instance.post(url, params).then(res => {
-      resolve(res)
-    }).catch(error => {
-      ElMessage({
-        message: error,
-        type: 'error',
-      })
-    })
-
+  return instance.post(url, params).catch((error) => {
+    message.error(error)
+    return null;
   })
+  // 一直不resolve 不reject 卡住了
+  // let result = new Promise((resolve, reject) => {
+  //   instance.post(url, params).then(res => {
+  //     resolve(res)
+  //   }).catch(error => {
+  //     message.error(error)
+  //     // ElMessage({
+  //     //   message: error,
+  //     //   type: 'error',
+  //     // })
+  //   })
+  // })
+  // return result
 }
 export default request;
 

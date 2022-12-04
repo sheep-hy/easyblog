@@ -4,7 +4,7 @@
       <div class="login-title">用户登录</div>
       <el-form
         ref="fromDataRef"
-        :model="fromData"
+        :model="formData"
         label-position="right"
         :rules="rules"
       >
@@ -12,7 +12,7 @@
         <el-form-item prop="account">
           <el-input
             placeholder="请输入账号"
-            v-model="fromData.account"
+            v-model="formData.account"
             size="large"
           >
             <template #prefix>
@@ -21,9 +21,11 @@
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
+          <!--  type="password" -->
           <el-input
+          type="password" 
             placeholder="请输入密码"
-            v-model="fromData.password"
+            v-model="formData.password"
             size="large"
           >
             <template #prefix>
@@ -35,7 +37,7 @@
           <div class="check-code-panel">
             <el-input
               placeholder="请输入验证码"
-              v-model="fromData.checkCode"
+              v-model="formData.checkCode"
               size="large"
               class="input-panel"
             />
@@ -43,7 +45,7 @@
           </div>
         </el-form-item>
         <el-form-item label="">
-          <el-checkbox v-model="fromData.remenberMe" :label="true">
+          <el-checkbox v-model="formData.remenberMe" :label="true">
             记住我
           </el-checkbox>
         </el-form-item>
@@ -58,11 +60,13 @@
 </template>
 
 <script setup>
+import md5 from 'js-md5'
 import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
-const { proxy } = getCurrentInstance
+
+const { proxy } = getCurrentInstance()
 const api = {
   checkCode: 'api/checkCode',
-  login: '',
+  login: '/login',
 }
 const checkCodeUrl = ref(api.checkCode)
 const changeCode = () => {
@@ -70,7 +74,7 @@ const changeCode = () => {
 }
 // 表单相关
 const fromDataRef = ref()
-const fromData = reactive({})
+const formData = reactive({})
 const rules = {
   account: [
     {
@@ -95,7 +99,20 @@ const login = () => {
   fromDataRef.value.validate(async (valid) => {
     console.log(valid, 'valid')
     if (!valid) return
-    const res =await proxy.Request()
+    // 18666666666 admin123
+    // 密码需要进行MD5
+    const res = await proxy.Request({
+      url: api.login,
+      params: {
+        account: formData.account,
+        password: md5(formData.password),
+        checkCode: formData.checkCode,
+      },
+      errorCallback:()=>{
+        changeCode();
+      }
+    })
+    if (!res) return
   })
 }
 </script>
