@@ -23,7 +23,7 @@
         <el-form-item prop="password">
           <!--  type="password" -->
           <el-input
-          type="password" 
+            type="password"
             placeholder="请输入密码"
             v-model="formData.password"
             size="large"
@@ -39,6 +39,7 @@
               placeholder="请输入验证码"
               v-model="formData.checkCode"
               size="large"
+              @keyup.enter.native="login"
               class="input-panel"
             />
             <img :src="checkCodeUrl" class="check-code" @click="changeCode" />
@@ -61,9 +62,12 @@
 
 <script setup>
 import md5 from 'js-md5'
+import VueCookies from 'vue-cookies'
+import {useRouter} from 'vue-router'
 import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
 
 const { proxy } = getCurrentInstance()
+const router=useRouter()
 const api = {
   checkCode: 'api/checkCode',
   login: '/login',
@@ -95,24 +99,64 @@ const rules = {
     },
   ],
 }
+const init = () => {
+  const loginInfo = VueCookies.get('loginInfo')
+  if (!loginInfo) {
+    return
+  }
+  // 存在cookies信息 则反显页面
+  Object.assign(formData, loginInfo)
+  // document.onkeyup=(e)=>{
+  //   console.log(e,'11')
+  //   if(e.keyCode !== 13){
+  //     return 
+  //   }
+  //   login()
+  // }
+}
+init()
 const login = () => {
   fromDataRef.value.validate(async (valid) => {
     console.log(valid, 'valid')
     if (!valid) return
+    const cookiesInfo=VueCookies.get('loginInfo')
+    let cookiesPassword=cookiesInfo==null?null:cookiesInfo.password
+    // 不存在 需要MD5 
+    if(cookiesPassword!==formData.password){
+      formData.password=md5(formData.password)
+    }
+    let params = {
+      account: formData.account,
+      password: formData.password,
+      checkCode: formData.checkCode,
+    }
     // 18666666666 admin123
     // 密码需要进行MD5
     const res = await proxy.Request({
       url: api.login,
-      params: {
-        account: formData.account,
-        password: md5(formData.password),
-        checkCode: formData.checkCode,
+      params: params,
+      errorCallback: () => {
+        changeCode()
       },
-      errorCallback:()=>{
-        changeCode();
-      }
     })
     if (!res) return
+    proxy.message.success('登录成功')
+    setTimeout(()=>{
+      router.push('/home')
+    },1000)
+    //记住密码 登录成功
+    const loginInfo = {
+      account: params.account,
+      password: params.password,
+      remenberMe: formData.remenberMe,
+    }
+    console.log(loginInfo, 'loginInfo1')
+    // 保存用户登录信息 不过期
+    VueCookies.set('userInfo', res.data, 0)
+    if (formData.remenberMe) {
+      // cookies 保存用户信息 设置7天
+      VueCookies.set('loginInfo', loginInfo, '7d')
+    }
   })
 }
 </script>
