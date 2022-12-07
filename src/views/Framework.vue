@@ -1,7 +1,28 @@
 <template>
   <div class="common-layout">
-    <el-container class="header">
-      <el-header>Header</el-header>
+    <el-container>
+      <el-header class="header">
+        <div class="logo">easyblog</div>
+        <div class="user-info">
+          欢迎回来,
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              {{ userInfo.nickName }}
+              <span :class="['iconfont', 'icon-arrow-down']"></span>
+              <!-- <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon> -->
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>个人信息</el-dropdown-item>
+                <el-dropdown-item>退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <div class="avatar"><img :src="userInfo.avatar" ></div>
+        </div>
+      </el-header>
       <el-container class="container">
         <el-aside class="left-aside">
           <div>
@@ -24,21 +45,34 @@
 
                 <ul class="sub-menu" v-show="item.open">
                   <li v-for="(subMenu, index) in item.children">
-                    <span class="sub-menu-title">{{ subMenu.title }}</span>
+                    <!-- <span class="sub-menu-title">{{ subMenu.title }}</span> -->
+                    <RouterLink
+                      :to="subMenu.path"
+                      :class="[
+                        'sub-menu-title',
+                        activePath === subMenu.path ? 'active' : '',
+                      ]"
+                      >{{ subMenu.title }}</RouterLink
+                    >
                   </li>
                 </ul>
               </li>
             </ul>
           </div>
         </el-aside>
-        <el-main class="right-main">Main</el-main>
+        <el-main class="right-main"><RouterView></RouterView></el-main>
       </el-container>
     </el-container>
   </div>
 </template>
 
 <script setup>
-import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
+import VueCookies from 'vue-cookies'
+import { defineComponent, getCurrentInstance, reactive, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+const { proxy } = getCurrentInstance()
 const menuList = ref([
   {
     title: '博客',
@@ -101,6 +135,23 @@ const handleOpenClose = (i) => {
   const status = menuList.value[i].open
   menuList.value[i].open = !status
 }
+const userInfo = ref({})
+const init = () => {
+  userInfo.value = VueCookies.get('userInfo')
+  userInfo.value.avatar = proxy.globalInfo.imgUrl + userInfo.value.avatar
+  console.log(userInfo.value, '个人信息')
+}
+init()
+const handleCommand = () => {}
+const activePath = ref(null)
+
+watch(
+  route,
+  (newval, oldval) => {
+    activePath.value = newval.path
+  },
+  { immediate: true, deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -110,6 +161,32 @@ const handleOpenClose = (i) => {
   .header {
     height: 60px;
     border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .logo {
+      flex: 1;
+      font-size: 30px;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      .el-dropdown-link {
+        cursor: pointer;
+        color: rgb(5, 195, 253);
+        .icon-arrow-down {
+          font-size: 14px;
+        }
+      }
+    }
+    .avatar {
+      margin-left: 8px;
+      width: 50px;
+      img {
+        border-radius: 25px;
+        width: 100%;
+      }
+    }
   }
   .container {
     flex: 1;
@@ -135,7 +212,7 @@ const handleOpenClose = (i) => {
         line-height: 40px;
         .iconfont {
           color: #91949a;
-          font-size:16px;
+          font-size: 16px;
         }
         .menu-title {
           margin-left: 8px;
@@ -144,7 +221,7 @@ const handleOpenClose = (i) => {
         }
         .up-dowm {
           width: 20px;
-          font-size:14px;
+          font-size: 14px;
         }
       }
       .menu:hover {
@@ -157,6 +234,11 @@ const handleOpenClose = (i) => {
           line-height: 30px;
           display: block;
           padding: 0 10px;
+          text-decoration: none;
+          color: #3f4042;
+        }
+        .active {
+          background-color: #ddd;
         }
         .sub-menu-title:hover {
           background-color: #ddd;
@@ -165,7 +247,6 @@ const handleOpenClose = (i) => {
     }
     .right-main {
       background-color: #fff;
-      border: 1px solid red;
     }
   }
 }

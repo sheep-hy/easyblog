@@ -142,7 +142,7 @@ const login = () => {
     if (!res) return
     proxy.message.success('登录成功')
     setTimeout(()=>{
-      router.push('/home')
+      router.push('/')
     },1000)
     //记住密码 登录成功
     const loginInfo = {
@@ -150,7 +150,6 @@ const login = () => {
       password: params.password,
       remenberMe: formData.remenberMe,
     }
-    console.log(loginInfo, 'loginInfo1')
     // 保存用户登录信息 不过期
     VueCookies.set('userInfo', res.data, 0)
     if (formData.remenberMe) {

@@ -8,8 +8,21 @@ const routes = [
   },
   {
     name: "框架页",
-    path: "/home",
-    component: () => import('../views/Framework.vue')
+    path: "/",
+    component: () => import('../views/Framework.vue'),
+    redirect:'/blog/list',
+    children: [
+      {
+        name: "博客",
+        path: "/blog/list",
+        component: () => import('../views/blog/Blog.vue')
+      },
+      {
+        name: "博客列表",
+        path: "/blog/category",
+        component: () => import('../views/blog/BlogCategary.vue')
+      }
+    ]
   },
 ]
 // 这里不是通过new来创建的， 通过createRouter 方法创建， 使用的模式不是通过莫得来定义
