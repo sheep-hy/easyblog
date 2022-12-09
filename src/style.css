@@ -13,6 +13,7 @@ li {
   margin: 0;
   list-style: none;
 }
+
 /* 表格当中action样式 */
 .op {
   display: flex;
@@ -22,6 +23,11 @@ li {
 a.a-lick {
   text-decoration: none;
   color: rgb(0, 123, 255);
+}
+
+.not-allow {
+  cursor: not-allowed;
+  color: #ddd;
 }
 
 /* 设置滚动条样式 */

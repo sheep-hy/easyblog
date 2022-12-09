@@ -3,7 +3,7 @@
     <el-dialog
       :show-close="showClose"
       :draggable="true"
-      v-model="show"
+      v-model="(show)"
       :close-on-click-modal="false"
       :title="title"
       class="cust-dialog"
@@ -17,12 +17,13 @@
       <template v-if="buttons&&buttons.length>0||showCancel">
         <div class="dialog-footer">
           <el-button link
-                     @click="close">
+                     @click="close" size="small">
             取消
           </el-button>
           <el-button v-for="btn in buttons"
                      :type="btn.type"
-                     @click="btn.click">
+                     @click="btn.click"
+                     size="small">
             {{btn.text}}
           </el-button>
         </div>
@@ -37,10 +38,10 @@ const props = defineProps({
   title: {
     type: String,
   },
-  // show: {
-  //   type: Boolean,
-  //   default: false
-  // },
+  show: {
+    type: Boolean,
+    default: false
+  },
   showClose: {
     type: Boolean,
     default: true,
@@ -62,8 +63,8 @@ const props = defineProps({
   },
 })
 
-const show = ref(true)
-const emit = defineEmits()
+// const show = ref(true)
+const emit = defineEmits('close')
 const close = () => {
   emit('close')
 }
@@ -82,7 +83,7 @@ const close = () => {
   }
   .dialog-footer {
     text-align: right;
-    padding: 5px 20px;
+    padding: 10px 20px;
   }
 }
 </style>

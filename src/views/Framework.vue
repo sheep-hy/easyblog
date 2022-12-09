@@ -195,7 +195,7 @@ watch(
     .left-aside {
       padding: 0 15px;
       width: 250px;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 70px);
       .post-btn {
         background: green;
         color: #fff;
@@ -247,6 +247,7 @@ watch(
     }
     .right-main {
       background-color: #fff;
+      position: relative;
     }
   }
 }

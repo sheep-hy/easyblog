@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "666893",
+      "name": "系统返回",
+      "font_class": "back",
+      "unicode": "e697",
+      "unicode_decimal": 59031
+    },
+    {
+      "icon_id": "1304889",
+      "name": "添加",
+      "font_class": "tianjia",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
       "icon_id": "15838429",
       "name": "arrow-down",
       "font_class": "arrow-down",

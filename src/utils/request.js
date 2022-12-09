@@ -6,21 +6,21 @@ import axios from 'axios'
 import { ElLoading } from 'element-plus'
 import message from '@/utils/Message'
 import router from '../router/index'
-const contentTypeForm = 'application/x-www-form-urlencoded;charset=UTF-8'
-const contentTypJson = 'applycation/json'
-const contentTypeFile = 'multipart/form-data'
+const contentTypeForm = "application/x-www-form-urlencoded;charset=UTF-8";
+const contentTypeJson = "application/json";
+const contentTypeFile = "multipart/form-data";
 const request = (config) => {
   // 由于发请求 传的数据不一样有的是form表单 有的是json 有的是文件
   // showLoading表示请求是加上loading效果
-  let { url, params, dataType, showLoading } = config
+  let { url, params, dataType = 'form', showLoading = true} = config;
   // m默认类型是form表单
-  dataType = dataType ? 'form' : dataType
-  showLoading = showLoading ? true : showLoading
+  // dataType = dataType ? 'form' : dataType
+  // showLoading = showLoading ? true : showLoading
   // 定义发请求的headr头信息
   let contentType = contentTypeForm
   if (dataType === 'json') {
     // Json格式配置
-    contentType = contentTypJson
+    contentType = contentTypeJson
   } else if (dataType === 'file') {
     //上传文件配置
     contentType = contentTypeFile
