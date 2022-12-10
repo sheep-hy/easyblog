@@ -13,6 +13,11 @@ const routes = [
     redirect:'/blog/list',
     children: [
       {
+        name: "text",
+        path: "/blog/text",
+        component: () => import('../views/blog/text.vue')
+      },
+      {
         name: "博客",
         path: "/blog/list",
         component: () => import('../views/blog/Blog.vue')
