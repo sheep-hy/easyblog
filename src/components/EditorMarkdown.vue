@@ -69,10 +69,10 @@ const handleUploadImage = async (event, insertImage, files) => {
   //   // height: 'auto',
   // });
 }
-const emit = defineEmits()
-const change = (text, html) => {
-  emit('update:modelValue', text)
-  emit('htmlContent', html)
+const emit = defineEmits();
+const change = (markdownContent, htmlContent) => {
+  emit("update:modelValue", markdownContent);
+  emit("htmlContent", htmlContent);
 }
 </script>
 

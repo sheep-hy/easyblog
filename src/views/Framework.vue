@@ -20,7 +20,7 @@
               </el-dropdown-menu>
             </template>
           </el-dropdown>
-          <div class="avatar"><img :src="userInfo.avatar" ></div>
+          <div class="avatar"><img :src="userInfo.avatar" /></div>
         </div>
       </el-header>
       <el-container class="container">
@@ -195,7 +195,7 @@ watch(
     .left-aside {
       padding: 0 15px;
       width: 250px;
-      height: calc(100vh - 70px);
+      height: calc(100vh - 80px);
       .post-btn {
         background: green;
         color: #fff;
@@ -248,6 +248,8 @@ watch(
     .right-main {
       background-color: #fff;
       position: relative;
+      // border:1px solid red;
+      height: calc(100vh - 80px);
     }
   }
 }

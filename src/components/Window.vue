@@ -47,11 +47,11 @@ const close = () => {
   position: absolute;
   left: 0px;
   top: 0px;
-
   height: calc(100vh - 80px);
+  // overflow: hidden;
   // width: 100%;
-  // border:1px solid red;
   background-color: #fff;
+  // background-color: pink;
   z-index: 99;
   .title {
     height: 30px;
@@ -63,16 +63,16 @@ const close = () => {
     }
   }
   .body {
-    height: calc(100vh - 152px);
-    // background-color: pink;
-    padding:10px;
+    // 60+10+30+50+20
+    height: calc(100vh - 172px);
+    padding: 10px;
   }
   .footer {
     height: 50px;
     border-top: 1px solid #ddd;
-    background-color: #fff;
+    // background-color: #fff;
     text-align: center;
-    line-height: 45px;
+    line-height: 50px;
   }
 }
 </style>

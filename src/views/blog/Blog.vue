@@ -48,7 +48,7 @@
           </el-col>
           <el-col :span="7">
             <el-form-item>
-              <el-button type="danger" @click="loadFetchList">搜索</el-button>
+              <el-button type="danger" @click="loadDataList">搜索</el-button>
               <el-button type="danger" @click="showEdit('add')"
                 >新增分类
               </el-button>
@@ -61,7 +61,7 @@
       :columns="columns"
       :showPagination="true"
       :dataSource="tableData"
-      :fetch="loadFetchList"
+      :fetch="loadDataList"
       :options="tableOptions"
     >
       <!-- 封面 -->
@@ -76,7 +76,7 @@
       </template>
       <!-- 类型 -->
       <template #typeName="{ index, row }">
-        <div>类型：{{ row.type == 0 ? '原创' : '转载' }}</div>
+        <div>类型：{{ row.type == 1 ? '原创' : '转载' }}</div>
         <div v-if="row.type == 1">转载地址：{{ row.reprinUrl }}</div>
       </template>
       <!-- 状态 -->
@@ -106,26 +106,21 @@
         <a href="javascript:void(0)" class="a-lick">预览</a>
       </template>
     </Table>
-    <!-- 新增修改弹框 -->
-    <Window
-      :show="windowConfig.show"
-      :buttons="windowConfig.buttons"
-      @close="closeWindow"
-    >
-      <div>test</div></Window
-    >
+    <BlogEdit ref="blogEditRef" @callback="loadDataList" ></BlogEdit>
   </div>
 </template>
 
 <script setup>
 import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
+import BlogEdit from './components/BlogEdit.vue'
+
 const { proxy } = getCurrentInstance()
 // 表单相关
 const fromDataRef = ref()
 const searchFormData = reactive({})
 const api = {
-  loadAllCategory: 'category/loadAllCategory4Blog',
-  loadBlog: 'blog/loadBlog',
+  loadAllCategory: '/category/loadAllCategory4Blog',
+  loadBlog: '/blog/loadBlog',
 }
 //获取博客分类
 const categoryList = ref([])
@@ -137,7 +132,7 @@ const loadCategoryList = async () => {
     return
   }
   categoryList.value = res.data
-  console.log(res, '获取博客分类')
+  // console.log(res, '获取博客分类')
 }
 loadCategoryList()
 // 封面需要定义插槽
@@ -154,9 +149,9 @@ const columns = [
 const tableData = ref({})
 // const tableData = reactive({})
 const tableOptions = reactive({
-  extHeight: 50,
+  extHeight: 70,
 })
-const loadFetchList = async () => {
+const loadDataList = async () => {
   let params = {
     pageNo: tableData.value.pageNo,
     pageSize: tableData.value.pageSize,
@@ -172,25 +167,9 @@ const loadFetchList = async () => {
   // Object.assign(tableData,result.data);
   tableData.value = result.data || []
 }
-const windowConfig = reactive({
-  show: false,
-  buttons: [
-    {
-      type: 'danger',
-      text: '确定',
-      click: () => {
-        console.log(111)
-      },
-    },
-  ],
-})
-// 关闭 刷新table
-const closeWindow = () => {
-  windowConfig.show = false
-  loadFetchList()
-}
+const blogEditRef = ref(null)
 const showEdit = (type, data) => {
-  windowConfig.show = true
+  blogEditRef.value.init(type, data)
 }
 </script>
 
