@@ -26,6 +26,11 @@ const routes = [
         name: "博客列表",
         path: "/blog/category",
         component: () => import('../views/blog/BlogCategary.vue')
+      },
+      {
+        name: "专题管理",
+        path: "/special/speciallist",
+        component: () => import('../views/special/SpecialList.vue')
       }
     ]
   },

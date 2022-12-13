@@ -96,7 +96,7 @@ const menuList = ref([
     children: [
       {
         title: '专题管理',
-        path: '/special/category',
+        path: '/special/speciallist',
       },
     ],
   },

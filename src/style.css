@@ -29,6 +29,10 @@ a.a-lick {
   cursor: not-allowed;
   color: #ddd;
 }
+.a-link {
+  text-decoration: none;
+  color: rgb(0, 123, 255);
+}
 
 /* 设置滚动条样式 */
 ::-webkit-scrollbar {
