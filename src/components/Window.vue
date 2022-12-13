@@ -9,7 +9,7 @@
     <div class="footer">
       <template v-if="(buttons && buttons.length > 0) || showCancel">
         <div class="dialog-footer">
-          <el-button link @click="close" size="small"> 取消 </el-button>
+          <el-button v-if='showCancel' link @click="close" size="small"> 取消 </el-button>
           <el-button
             v-for="btn in buttons"
             :type="btn.type"
@@ -35,6 +35,10 @@ const props = defineProps({
   buttons: {
     type: Array,
   },
+  showCancel:{
+    type: Boolean,
+    default: true,
+  }
 })
 const emit = defineEmits('close')
 const close = () => {
@@ -66,6 +70,7 @@ const close = () => {
     // 60+10+30+50+20
     height: calc(100vh - 172px);
     padding: 10px;
+    overflow: auto;
   }
   .footer {
     height: 50px;

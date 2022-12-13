@@ -14,6 +14,8 @@
                 placeholder="请输入标题"
                 v-model="searchFormData.titleFuzzy"
                 :style="{ width: '100%' }"
+                @keyup.enter.native="loadDataList"
+                clearable
               >
               </el-input>
             </el-form-item>
@@ -76,8 +78,13 @@
       </template>
       <!-- 类型 -->
       <template #typeName="{ index, row }">
-        <div>类型：{{ row.type == 1 ? '原创' : '转载' }}</div>
-        <div v-if="row.type == 1">转载地址：{{ row.reprinUrl }}</div>
+        <div>
+          <!-- 类型：{{ row.type == 1 ? '原创' : '转载' }} -->
+          类型：
+          <span v-if="row.type == 1">原创</span
+          ><span v-if="row.type == 0">转载</span>
+        </div>
+        <div v-if="row.type == 0">转载地址：{{ row.reprinUrl }}</div>
       </template>
       <!-- 状态 -->
       <template #statusName="{ index, row }">
@@ -101,18 +108,22 @@
         >
         <!-- @click="showEdit('update', row)" -->
         <el-divider direction="vertical" />
-        <a href="javascript:void(0)" class="a-lick">删除</a>
+        <a href="javascript:void(0)" class="a-lick" @click="del(row.blogId)"
+          >删除</a
+        >
         <el-divider direction="vertical" />
-        <a href="javascript:void(0)" class="a-lick">预览</a>
+        <a href="javascript:void(0)" class="a-lick" @click="showDetail(row.blogId)">预览</a>
       </template>
     </Table>
-    <BlogEdit ref="blogEditRef" @callback="loadDataList" ></BlogEdit>
+    <BlogEdit ref="blogEditRef" @callback="loadDataList"></BlogEdit>
+    <BlogDetail ref="blogDetailRef" ></BlogDetail>
   </div>
 </template>
 
 <script setup>
 import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
 import BlogEdit from './components/BlogEdit.vue'
+import BlogDetail from './components/BlogDetail.vue'
 
 const { proxy } = getCurrentInstance()
 // 表单相关
@@ -121,6 +132,7 @@ const searchFormData = reactive({})
 const api = {
   loadAllCategory: '/category/loadAllCategory4Blog',
   loadBlog: '/blog/loadBlog',
+  delBlog: '/blog/recoveryBlog',
 }
 //获取博客分类
 const categoryList = ref([])
@@ -170,6 +182,27 @@ const loadDataList = async () => {
 const blogEditRef = ref(null)
 const showEdit = (type, data) => {
   blogEditRef.value.init(type, data)
+}
+//删除
+const del = async (id) => {
+  proxy.Confirm('你确定要删除？', async () => {
+    const result = await proxy.Request({
+      url: api.delBlog,
+      params: {
+        blogId: id,
+      },
+    })
+    if (!result) {
+      return
+    }
+    loadDataList()
+  })
+}
+// 详情
+const blogDetailRef=ref(null)
+const showDetail=(id)=>{
+  blogDetailRef.value.showDetail(id)
+
 }
 </script>
 

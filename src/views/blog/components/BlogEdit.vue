@@ -76,7 +76,7 @@
           </el-form-item>
 
           <el-form-item
-            v-if="(blogFormData.type == 1)"
+            v-if="blogFormData.type == 1"
             label="原文地址"
             prop="reprintUrl"
           >
@@ -149,8 +149,9 @@ import {
   getCurrentInstance,
   reactive,
   onMounted,
-  ref,
+  onUnmounted,
   nextTick,
+  ref,
 } from 'vue'
 const markdownHeight = window.innerHeight - 60 - 10 - 30 - 50 - 40 - 60
 const editorHtmlHeight = window.innerHeight - 60 - 10 - 30 - 50 - 160 - 60
@@ -159,6 +160,7 @@ const api = {
   saveBlog: '/blog/saveBlog',
   getUserInfo: '/getUserInfo',
   getBlogById: '/blog/getBlogById',
+  autoSaveBlog: '/blog/autoSaveBlog',
 }
 const { proxy } = getCurrentInstance()
 const windowConfig = reactive({
@@ -178,8 +180,13 @@ const emit = defineEmits()
 const closeWindow = () => {
   windowConfig.show = false
   emit('callback')
+  // 关闭窗口清除定时器
+  if (timer.value !== null) {
+    clearTimer()
+  }
 }
 const init = (type, data) => {
+  startTimer()
   windowConfig.show = true
   nextTick(() => {
     blogFormDataRef.value.resetFields()
@@ -214,14 +221,56 @@ const getBlogDetail = async (data) => {
   if (!res) {
     return
   }
-  blogFormData.value = { ...res.data, tagList: res.data.tag || [] }
-  blogFormData.value.type = res.data.type
-  console.log(blogFormData.value, 'blogFormData.value')
+  blogFormData.value = { ...res.data }
   if (res.data.tag) {
     blogFormData.value.tagList = res.data.tag.split('|')
+  } else {
+    blogFormData.value.tagList = []
   }
   // blogFormData.value.editorType = res.data.editorType
 }
+// 设置定时器
+let timer = ref(null)
+const startTimer = () => {
+  timer.value = setInterval(() => {
+    autoSave()
+  }, 5000)
+}
+// 关闭清除定时器
+const clearTimer = () => {
+  if (timer.value !== null) {
+    clearInterval(timer.value)
+    timer.value = null
+  }
+}
+//自动保存
+const autoSave = async () => {
+  // 判断内容和标题 没有不需要保存
+  if (
+    (blogFormData.value.title == '' && blogFormData.value.content == '') ||
+    timer.value == null ||
+    dialogConfig.show
+  ) {
+    return
+  }
+  const params = {}
+  Object.assign(params, blogFormData.value)
+  if (params.tagList) {
+    params.tag = params.tagList.join('|')
+  } else {
+    params.tag = ''
+  }
+  let res = await proxy.Request({
+    url: api.autoSaveBlog,
+    showLoading: false,
+    params,
+  })
+  if (!res) {
+    return
+  }
+  blogFormData.value.blogId = res.data
+}
+
 // 表单相关
 const blogFormDataRef = ref()
 const blogFormData = ref({ tagList: [] })
@@ -279,6 +328,10 @@ const loadCategoryList = async () => {
 onMounted(() => {
   loadCategoryList()
 })
+onUnmounted(() => {
+  clearTimer()
+})
+
 // 打开dialogConfig弹框 需要校验
 // 第一步提交
 const showSettings = () => {
@@ -324,7 +377,7 @@ const submitBlogForm = () => {
       markdownContent: blogFormData.markdownContent, //markdownContent
     }
     Object.assign(params, blogFormData.value)
-    console.log(params, 'params')
+    // console.log(params, 'params')
     // Object.assign(params, settingFormData)
     params.tag = params.tagList.join('|')
     let result = await proxy.Request({
