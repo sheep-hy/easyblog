@@ -8,7 +8,7 @@
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
-              <span>Card name</span>
+              <span>专题</span>
               <!-- <el-button class="button" text>Operation button</el-button> -->
             </div>
           </template>
@@ -50,55 +50,87 @@
               <!-- <el-button class="button" text>Operation button</el-button> -->
             </div>
           </template>
-            <el-tree
-              class="tree-panel"
-              ref="refTree"
-              :data="blogList"
-              defaultExpandAll
-              node-key="blogId"
-              :expand-on-click-node="false"
-              :props="treeProps"
-              :highlight-current="true"
-              draggable
-              @node-drop="blogDrag"
-            >
-              <template #default="{ node, data }">
-                <span class="custom-node-style">
-                  <span class="node-title">
-                    <!-- v-if="data.status == 0"
-                      :style="{ color: 'red', 'font-size': '13px' }" -->
-                    <span>{{ data.title }}</span>
-                    <!-- v-else
-                      :style="{ color: 'green', 'font-size': '13px' }" -->
-                    <!-- <span>{{ data.title }}</span> -->
-                  </span>
-                  <span class="node-op">
-                    <template v-if="data.blogId === '0'">
-                      <a class="a-link" href="javascript:void(0)">新增文章</a>
-                      <!-- @click="editBlog('add', data)" -->
-                    </template>
-                    <template v-else>
-                      <!-- @click="showDetail(data)" -->
-                      <a class="a-link" href="javascript:void(0)">预览</a>
-                      <el-divider direction="vertical" />
-                      <!-- @click="editBlog('edit', data)"    v-if="userInfo.userId == data.userId" -->
-                      <a class="a-link" href="javascript:void(0)">修改</a>
-                      <!-- <span v-else>--</span> -->
-                      <el-divider direction="vertical" />
-                      <!-- @click="delBlog(data)"
-                        v-if="userInfo.userId == data.userId" -->
-                      <a class="a-link" href="javascript:void(0)">删除</a>
-                      <!-- <span v-else>--</span> -->
-                      <el-divider direction="vertical" />
-                      <!--    @click="editBlog('add', data)" -->
-                      <a class="a-link" href="javascript:void(0)"
-                        >新增下级文章</a
-                      >
-                    </template>
-                  </span>
+          <div :style="{ 'margin-bottom': '5px' }">
+            <el-alert
+              title="红色代表草稿绿色代表已发布、拖动文章修改排序"
+              type="info"
+              show-icon
+              :closable="false"
+            />
+          </div>
+          <el-tree
+            class="tree-panel"
+            ref="refTree"
+            :data="blogList"
+            defaultExpandAll
+            node-key="blogId"
+            :expand-on-click-node="false"
+            :props="treeProps"
+            :highlight-current="true"
+            draggable
+            @node-drop="blogDrag"
+          >
+            <template #default="{ node, data }">
+              <span class="custom-node-style">
+                <span class="node-title">
+                  <!-- 草稿 -->
+                  <span
+                    v-if="data.status == 0"
+                    :style="{ color: 'red', 'font-size': '13px' }"
+                    >{{ data.title }}</span
+                  >
+                  <!-- 已发布 -->
+                  <span
+                    v-else
+                    :style="{ color: 'green', 'font-size': '13px' }"
+                    >{{ data.title }}</span
+                  >
                 </span>
-              </template>
-            </el-tree>
+                <span class="node-op">
+                  <template v-if="data.blogId === '0'">
+                    <a
+                      class="a-link"
+                      href="javascript:void(0)"
+                      @click="editBlog('add', data)"
+                      >新增文章</a
+                    >
+                    <!-- @click="editBlog('add', data)" -->
+                  </template>
+                  <template v-else>
+                    <!-- @click="showDetail(data)" -->
+                    <a class="a-link" href="javascript:void(0)">预览</a>
+                    <el-divider direction="vertical" />
+                    <!-- @click="editBlog('edit', data)"    v-if="userInfo.userId == data.userId" -->
+                    <a
+                      class="a-link"
+                      href="javascript:void(0)"
+                      @click="editBlog('edit', data)"
+                      >修改</a
+                    >
+                    <!-- <span v-else>--</span> -->
+                    <el-divider direction="vertical" />
+                    <!-- @click="delBlog(data)"
+                        v-if="userInfo.userId == data.userId" -->
+                    <a
+                      class="a-link"
+                      href="javascript:void(0)"
+                      @click="delBlog(data)"
+                      >删除</a
+                    >
+                    <!-- <span v-else>--</span> -->
+                    <el-divider direction="vertical" />
+                    <!--    @click="editBlog('add', data)" -->
+                    <a
+                      class="a-link"
+                      href="javascript:void(0)"
+                      @click="editBlog('add', data)"
+                      >新增下级文章</a
+                    >
+                  </template>
+                </span>
+              </span>
+            </template>
+          </el-tree>
         </el-card>
       </el-col>
     </el-row>
@@ -138,6 +170,7 @@
           </el-input>
         </el-form-item> </el-form
     ></Dialog>
+    <BlogEdit ref="blogEditRef" @callback="saveBlogCallback"></BlogEdit>
   </div>
 </template>
 
@@ -149,13 +182,16 @@ import {
   reactive,
   ref,
 } from 'vue'
+import BlogEdit from './BlogEdit.vue'
 import VueCookies from 'vue-cookies'
 const { proxy } = getCurrentInstance()
 const api = {
+  loadDataList: '/category/loadCategory4Special',
   saveCategory: '/category/saveCategory4Special',
   delCategory: 'category/delCategory4Special',
   getSpecialInfo: '/blog/getSpecialInfo',
-  loadDataList: '/category/loadCategory4Special',
+  delBlog: '/blog/recoveryBlog',
+  updateSpecialBlogSort: 'blog/updateSpecialBlogSort',
 }
 // const userInfo = ref(proxy.VueCookies.get("userInfo") || {});
 // 封面需要定义插槽
@@ -187,7 +223,8 @@ const loadFetchList = async () => {
     result.data.list.length > 0
   ) {
     currentCategaryId.value = result.data.list[0].categoryId
-    loadBlogList()
+    // 获取专题文章 树形结构展示
+    getSpecialInfo()
   }
   // 表格需要高亮
   nextTick(() => {
@@ -277,11 +314,11 @@ const del = (row) => {
 // 、、点击触发
 const rowClick = (row) => {
   currentCategaryId.value = row.categoryId
-  loadBlogList()
+  getSpecialInfo()
 }
 // 获取专题文章
 const blogList = ref([])
-const loadBlogList = async (categoryId) => {
+const getSpecialInfo = async (categoryId) => {
   const res = await proxy.Request({
     url: api.getSpecialInfo,
     params: {
@@ -300,18 +337,79 @@ const treeProps = {
   label: 'title',
   value: 'blogId',
 }
-const blogDrag = () => {}
+//拖动改变排序，修改父级
+const blogDrag = async (draggingNode, dropNode, dropType, ev) => {
+  // 共四个参数，依次为：被拖拽节点对应的 Node、结束拖拽时最后进入的节点、被拖拽节点的放置位置（before、after、inner）、event
+  console.log(draggingNode, dropNode, dropType);
+  //拖入某个节点内，修改父级节点为目标节点，同时修改目标节点下的所有子节点的排序
+  let parentNode = null;
+  if (dropType == "inner") {
+    //拖入某个节点内，修改父级节点为目标节点，同时修改目标节点下的所有子节点的排序
+    parentNode = dropNode;
+  } else {
+    //拖入之前，之后，修改被拖动的节点的父节点为目标节点的父节点，同时修改目标节点父节点下所有的子节点的排序
+    parentNode = dropNode.parent;
+  }
+  //操作的节点ID
+  const blogId = draggingNode.data.blogId;
+  const pBlogId = parentNode.data.blogId;
+  //需要从新排序的博客ID
+  const blogIds = [];
+  parentNode.childNodes.forEach((element) => {
+    blogIds.push(element.data.blogId);
+  });
+  let params = {
+    blogId,
+    pBlogId,
+    blogIds: blogIds.join(","),
+  };
+  let result = await proxy.Request({
+    url: api.updateSpecialBlogSort,
+    params,
+  });
+  if (!result) {
+    return;
+  }
+  //重新加载文章树
+  getSpecialInfo();
+};
+// 新增修改专题博客
+const blogEditRef = ref(null)
+const editBlog = (type, data) => {
+  blogEditRef.value.init(type, data)
+}
+// 保存专题博客回调
+const saveBlogCallback = () => {
+  getSpecialInfo()
+}
+// 删除文章专题delBlog
+const delBlog = (data) => {
+  proxy.Confirm('你确定要删除？', async () => {
+    const res = await proxy.Request({
+      url: api.delBlog,
+      params: {
+        blogId: data.blogId,
+      },
+    })
+    if (!res) {
+      return
+    }
+    proxy.Message.success('删除成功')
+    getSpecialInfo()
+  })
+}
 </script>
 
-<style lang="scss" >
+<style lang="scss">
 .box-card {
   margin-top: 10px;
 }
 .tree-panel {
-  height: calc(100vh - 265px);
+  height: calc(100vh - 307px);
   border: 1px solid red;
-  .custom-node-style{
-    flex:1
+  overflow: auto;
+  .custom-node-style {
+    flex: 1;
   }
   .custom-node-style {
     display: flex;
