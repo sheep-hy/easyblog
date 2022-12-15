@@ -94,13 +94,11 @@
                       @click="editBlog('add', data)"
                       >新增文章</a
                     >
-                    <!-- @click="editBlog('add', data)" -->
                   </template>
                   <template v-else>
-                    <!-- @click="showDetail(data)" -->
-                    <a class="a-link" href="javascript:void(0)">预览</a>
+                    <a class="a-link" href="javascript:void(0)"  @click="showDetail(data)">预览</a>
                     <el-divider direction="vertical" />
-                    <!-- @click="editBlog('edit', data)"    v-if="userInfo.userId == data.userId" -->
+                    <!--  v-if="userInfo.userId == data.userId" -->
                     <a
                       class="a-link"
                       href="javascript:void(0)"
@@ -109,7 +107,7 @@
                     >
                     <!-- <span v-else>--</span> -->
                     <el-divider direction="vertical" />
-                    <!-- @click="delBlog(data)"
+                    <!-- 
                         v-if="userInfo.userId == data.userId" -->
                     <a
                       class="a-link"
@@ -171,6 +169,7 @@
         </el-form-item> </el-form
     ></Dialog>
     <BlogEdit ref="blogEditRef" @callback="saveBlogCallback"></BlogEdit>
+    <BlogDetail ref="blogDetailRef"></BlogDetail>
   </div>
 </template>
 
@@ -183,6 +182,7 @@ import {
   ref,
 } from 'vue'
 import BlogEdit from './BlogEdit.vue'
+import BlogDetail from './BlogDetail.vue'
 import VueCookies from 'vue-cookies'
 const { proxy } = getCurrentInstance()
 const api = {
@@ -397,6 +397,12 @@ const delBlog = (data) => {
     proxy.Message.success('删除成功')
     getSpecialInfo()
   })
+}
+// 展示专题 预览
+const blogDetailRef=ref(null)
+const showDetail=(data)=>{
+  blogDetailRef.value.showDetail(data)
+
 }
 </script>
 

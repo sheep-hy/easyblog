@@ -75,7 +75,7 @@ const request = (config) => {
       if (showLoading && loading) {
         loading.close()
       }
-      console.log(response, 'response')
+      // console.log(response, 'response')
       const responseData = response.data
       if (responseData.status === 'error') {
         // 把错误信息报出来
@@ -116,7 +116,7 @@ const request = (config) => {
     message.error(error)
     return null;
   })
-  // 一直不resolve 不reject 卡住了
+  // 一直不resolve 不reject 卡住了 出现的几率很小
   // let result = new Promise((resolve, reject) => {
   //   instance.post(url, params).then(res => {
   //     resolve(res)
