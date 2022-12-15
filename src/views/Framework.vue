@@ -15,8 +15,11 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>个人信息</el-dropdown-item>
-                <el-dropdown-item>退出</el-dropdown-item>
+                <el-dropdown-item  @click="goUserInfo">
+                  <!-- <router-link class="a-router" to="../settings/my">个人信息</router-link> -->
+                  <span class="a-lick">个人信息</span>
+                </el-dropdown-item>
+                <el-dropdown-item @click="lagout">退出</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -72,6 +75,10 @@ import { defineComponent, getCurrentInstance, reactive, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
+const api = {
+  getUserInfo: '/getUserInfo',
+  logout: '/logout',
+}
 const { proxy } = getCurrentInstance()
 const menuList = ref([
   {
@@ -107,15 +114,15 @@ const menuList = ref([
     children: [
       {
         title: '个人信息设置',
-        path: '/setting/my',
+        path: '/settings/my',
       },
       {
         title: '博客成员',
-        path: '/setting/user',
+        path: '/settings/user',
       },
       {
         title: '系统设置',
-        path: '/setting/sysSetting',
+        path: '/settings/sysSetting',
       },
     ],
   },
@@ -136,15 +143,36 @@ const handleOpenClose = (i) => {
   menuList.value[i].open = !status
 }
 const userInfo = ref({})
-const init = () => {
-  userInfo.value = VueCookies.get('userInfo')
+const init = async () => {
+  const res = await proxy.Request({
+    url: api.getUserInfo,
+  })
+  if (!res) {
+    return
+  }
+  userInfo.value = res.data
+  // userInfo.value = VueCookies.get('userInfo')
   userInfo.value.avatar = proxy.globalInfo.imgUrl + userInfo.value.avatar
-  console.log(userInfo.value, '个人信息')
+  // console.log(userInfo.value, '个人信息')
 }
 init()
 const handleCommand = () => {}
 const activePath = ref(null)
-
+const goUserInfo = () => {
+  router.push('../settings/my')
+}
+// 退出登录
+const lagout = () => {
+  proxy.Confirm('你确定要退出吗', async () => {
+    const res = await proxy.Request({
+      url: api.logout,
+    })
+    if (!res) {
+      return
+    }
+    router.push('/login')
+  })
+}
 watch(
   route,
   (newval, oldval) => {

@@ -35,9 +35,7 @@
                 >修改</a
               >
               <el-divider direction="vertical" />
-              <a href="javascript:void(0)" @click="del(row)" class="a-lick"
-                >删除</a
-              >
+              <a href="javascript:void(0)" @click="del(row)" class="a-lick">删除</a>
             </template>
           </Table>
         </el-card>

@@ -9,6 +9,7 @@ import '@/assets/icon/iconfont.css'
 import Request from '@/utils/request'
 import Message from '@/utils/Message'
 import Confirm from '@/utils/Confirm'
+import Verify from '@/utils/Verify'
 
 import Table from '@/components/Table.vue'
 import Cover from '@/components/Cover.vue'
@@ -25,6 +26,7 @@ app.use(ElementPlus)
 app.config.globalProperties.Request = Request
 app.config.globalProperties.Message = Message
 app.config.globalProperties.Confirm = Confirm
+app.config.globalProperties.Verify = Verify
 app.config.globalProperties.globalInfo = {
   imgUrl:'/api/file/getImage/'
 }

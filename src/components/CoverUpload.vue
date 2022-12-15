@@ -48,6 +48,7 @@ const uploadImg = async (file) => {
   console.log(res.data.fileName)
 
   emit('update:modelValue', res.data.fileName)
+  emit('callback', res.data.fileName)
 }
 </script>
 

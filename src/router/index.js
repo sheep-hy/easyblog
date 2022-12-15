@@ -31,6 +31,11 @@ const routes = [
         name: "专题管理",
         path: "/special/speciallist",
         component: () => import('../views/special/SpecialList.vue')
+      },
+      {
+        name: "个人信息设置",
+        path: "/settings/my",
+        component: () => import('../views/settings/MyInfo.vue')
       }
     ]
   },

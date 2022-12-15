@@ -24,6 +24,10 @@ a.a-lick {
   text-decoration: none;
   color: rgb(0, 123, 255);
 }
+a.a-router {
+  text-decoration: none;
+  color: #3f4042;
+}
 
 .not-allow {
   cursor: not-allowed;
