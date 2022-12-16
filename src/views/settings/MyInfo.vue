@@ -11,7 +11,10 @@
         <el-col :span="8">
           <el-form-item label="头像" prop="avatar">
             <!-- <Cover v-model="formData.cover"></Cover> -->
-            <CoverUpload v-model="formData.avatar" @callback="saveAvatar"></CoverUpload>
+            <CoverUpload
+              v-model="formData.avatar"
+              @callback="saveAvatar"
+            ></CoverUpload>
           </el-form-item>
           <el-form-item label="昵称" prop="nickName">
             <el-input placeholder="请输入昵称" v-model="formData.nickName">
@@ -94,6 +97,8 @@ import {
   ref,
   nextTick,
 } from 'vue'
+import { useStore } from 'vuex'
+const store = useStore()
 const { proxy } = getCurrentInstance()
 const api = {
   getUserInfo: '/getUserInfo',
@@ -167,25 +172,29 @@ const saveMy = async () => {
       return
     }
     proxy.Message.success('保存成功')
-    // store.commit('updateUserInfo', {
-    //   nickName: formData.value.nickName,
-    //   avatar: formData.value.avatar
-    // })
+
+    store.commit('user/updateUserInfo', {
+      nickName: formData.value.nickName,
+      avatar: formData.value.avatar,
+    })
   })
 }
 // 修改头像
-const saveAvatar=async(avatar)=>{
+const saveAvatar = async (avatar) => {
   const res = await proxy.Request({
-      url: api.saveAvatar,
-      params: {
-        avatar: avatar,
-      },
-    })
-    if(!res){
-      return
-    }
-    proxy.Message.success('修改头像成功')
-
+    url: api.saveAvatar,
+    params: {
+      avatar: avatar,
+    },
+  })
+  if (!res) {
+    return
+  }
+  proxy.Message.success('修改头像成功')
+  store.commit('user/updateUserInfo', {
+    nickName: formData.value.nickName,
+    avatar: avatar,
+  })
 }
 const formPassword = ref({})
 const fromPasswordRef = ref(null)
@@ -215,7 +224,7 @@ const submitPassword = () => {
         password: formPassword.value.password,
       },
     })
-    if(!res){
+    if (!res) {
       return
     }
     proxy.Message.success('修改密码成功')

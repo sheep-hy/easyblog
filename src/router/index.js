@@ -36,6 +36,16 @@ const routes = [
         name: "个人信息设置",
         path: "/settings/my",
         component: () => import('../views/settings/MyInfo.vue')
+      },
+      {
+        name: "博客成员",
+        path: "/settings/user",
+        component: () => import('../views/settings/TeamUser.vue')
+      },
+      {
+        name: "系统设置",
+        path: "/settings/sysSetting",
+        component: () => import('../views/settings/SysSetting.vue')
       }
     ]
   },

@@ -70,8 +70,6 @@
             <el-radio-group v-model="blogFormData.type">
               <el-radio :label="0">原创</el-radio>
               <el-radio :label="1">转载</el-radio>
-              <!-- <el-radio label="1" size="large">原创</el-radio>
-              <el-radio label="0" size="large">转载</el-radio> -->
             </el-radio-group>
           </el-form-item>
 

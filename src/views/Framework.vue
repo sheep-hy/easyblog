@@ -15,7 +15,7 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item  @click="goUserInfo">
+                <el-dropdown-item @click="goUserInfo">
                   <!-- <router-link class="a-router" to="../settings/my">个人信息</router-link> -->
                   <span class="a-lick">个人信息</span>
                 </el-dropdown-item>
@@ -73,6 +73,8 @@
 import VueCookies from 'vue-cookies'
 import { defineComponent, getCurrentInstance, reactive, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useStore } from 'vuex'
+const store = useStore()
 const router = useRouter()
 const route = useRoute()
 const api = {
@@ -177,6 +179,18 @@ watch(
   route,
   (newval, oldval) => {
     activePath.value = newval.path
+  },
+  { immediate: true, deep: true }
+)
+// 监听store
+const { user } = store.state
+watch(
+  ()=>user.userInfo,
+  (newval, oldval) => {
+    // console.log(newval,'------------------newval')
+    const avatar = proxy.globalInfo.imgUrl + newval.avatar
+    const nickName = newval.nickName
+    userInfo.value = { avatar, nickName }
   },
   { immediate: true, deep: true }
 )

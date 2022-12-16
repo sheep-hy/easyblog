@@ -81,10 +81,10 @@
         <div>
           <!-- 类型：{{ row.type == 1 ? '原创' : '转载' }} -->
           类型：
-          <span v-if="row.type == 1">原创</span
-          ><span v-if="row.type == 0">转载</span>
+          <span v-if="(row.type == 0)">原创</span
+          ><span v-if="(row.type == 1)">转载</span>
         </div>
-        <div v-if="row.type == 0">转载地址：{{ row.reprinUrl }}</div>
+        <div v-if="(row.type == 1)">转载地址：{{ row.reprinUrl }}</div>
       </template>
       <!-- 状态 -->
       <template #statusName="{ index, row }">

@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 
 import router from '@/router'
+import store from './store'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
@@ -22,6 +23,7 @@ import EditorHtml from '@/components/EditorHtml.vue'
 
 const app = createApp(App)
 app.use(router)
+app.use(store)
 app.use(ElementPlus)
 app.config.globalProperties.Request = Request
 app.config.globalProperties.Message = Message
