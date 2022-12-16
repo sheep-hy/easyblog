@@ -246,7 +246,7 @@ const dialogConfig = reactive({
 })
 // 表单相关
 const fromDataRef = ref()
-const formData = reactive({})
+let formData = reactive({})
 const rules = {
   categoryName: [
     {
@@ -292,7 +292,7 @@ const submitForm = () => {
 }
 // 删除
 const del = (row) => {
-  proxy.Confirm('你确定要删除？', async () => {
+  proxy.Confirm(`你确定要删除${data.categoryName}`, async () => {
     const res = await proxy.Request({
       url: api.delCategory,
       params: {
@@ -380,7 +380,7 @@ const editBlog = (type, data) => {
 const saveBlogCallback = () => {
   getSpecialInfo()
 }
-// 删除文章专题delBlog
+// 删除文章专题
 const delBlog = (data) => {
   proxy.Confirm('你确定要删除？', async () => {
     const res = await proxy.Request({

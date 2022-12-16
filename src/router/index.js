@@ -46,6 +46,11 @@ const routes = [
         name: "系统设置",
         path: "/settings/sysSetting",
         component: () => import('../views/settings/SysSetting.vue')
+      },
+      {
+        name: "回收站",
+        path: "/recovery/list",
+        component: () => import('../views/recovery/RecoveryList.vue')
       }
     ]
   },
