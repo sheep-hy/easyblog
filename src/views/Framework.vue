@@ -2,13 +2,13 @@
   <div class="common-layout">
     <el-container>
       <el-header class="header">
-        <div class="logo">easyblog</div>
+        <div class="logo">EasyBlog</div>
         <div class="user-info">
           欢迎回来,
           <el-dropdown @command="handleCommand">
             <span class="el-dropdown-link">
               {{ userInfo.nickName }}
-              <span :class="['iconfont', 'icon-arrow-down']"></span>
+              <span :class="['iconfont', true ? 'icon-arrow-down' : '']"></span>
               <!-- <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon> -->
@@ -29,7 +29,7 @@
       <el-container class="container">
         <el-aside class="left-aside">
           <div>
-            <el-button class="post-btn">发布</el-button>
+            <el-button class="post-btn" @click="publish">发布</el-button>
           </div>
           <div>
             <ul class="menu-panel">
@@ -48,13 +48,14 @@
 
                 <ul class="sub-menu" v-show="item.open">
                   <li v-for="(subMenu, index) in item.children">
-                    <!-- <span class="sub-menu-title">{{ subMenu.title }}</span> -->
+                    <!-- <subMenu.roleType==null||subMenu.roleType==userInfo.roleType 当前角色和用户角色一致 展示系统设置-->
                     <RouterLink
                       :to="subMenu.path"
                       :class="[
                         'sub-menu-title',
                         activePath === subMenu.path ? 'active' : '',
                       ]"
+                      v-if="(subMenu.roleType==null||subMenu.roleType==userInfo.roleType)"
                       >{{ subMenu.title }}</RouterLink
                     >
                   </li>
@@ -66,11 +67,53 @@
         <el-main class="right-main"><RouterView></RouterView></el-main>
       </el-container>
     </el-container>
+    <!-- // 发布 进步条 -->
+    <Dialog
+      :show="dialogConfig.show"
+      :title="dialogConfig.title"
+      :buttons="dialogConfig.buttons"
+      :showCancel="false"
+      :showClose="false"
+      @close="dialogConfig.show = false"
+      width="400"
+    >
+      <div class="progress-container">
+        <div class="progress-panel">
+          <el-progress
+            type="circle"
+            :percentage="progressInfo.progress"
+            :status="progressInfo.status"
+            :color="colors"
+          />
+        </div>
+        <div class="error" v-if="progressInfo.result == 0">
+          <div>页面出错了，{{ progressInfo.errorMsg }}</div>
+          <div class="info">具体错误，请查看服务器日志</div>
+        </div>
+        <div
+          v-if="progressInfo.progress == 100 && progressInfo.result == 1"
+          class="success"
+        >
+          发布成功
+        </div>
+        <div
+          class="btn-panel"
+          v-if="progressInfo.progress == 100 || progressInfo.result == 0"
+        >
+          <el-button
+            class="btn"
+            type="primary"
+            @click="dialogConfig.show = false"
+            >关闭</el-button
+          >
+        </div>
+      </div>
+    </Dialog>
   </div>
 </template>
 
 <script setup>
-import VueCookies from 'vue-cookies'
+// import VueCookies from 'vue-cookies'
 import { defineComponent, getCurrentInstance, reactive, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
@@ -80,8 +123,11 @@ const route = useRoute()
 const api = {
   getUserInfo: '/getUserInfo',
   logout: '/logout',
+  createHtml: '/createHtml',
+  checkProgress: '/checkProgress',
 }
 const { proxy } = getCurrentInstance()
+// const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
 const menuList = ref([
   {
     title: '博客',
@@ -125,6 +171,7 @@ const menuList = ref([
       {
         title: '系统设置',
         path: '/settings/sysSetting',
+        roleType: 1,
       },
     ],
   },
@@ -185,7 +232,7 @@ watch(
 // 监听store
 const { user } = store.state
 watch(
-  ()=>user.userInfo,
+  () => user.userInfo,
   (newval, oldval) => {
     // console.log(newval,'------------------newval')
     const avatar = proxy.globalInfo.imgUrl + newval.avatar
@@ -194,6 +241,59 @@ watch(
   },
   { immediate: true, deep: true }
 )
+// 发布
+const colors = [
+  { color: '#f56c6c', percentage: 20 },
+  { color: '#e6a23c', percentage: 40 },
+  { color: '#5cb87a', percentage: 60 },
+  { color: '#1989fa', percentage: 80 },
+  { color: '#6f7ad3', percentage: 100 },
+]
+const dialogConfig = reactive({
+  show: false,
+  title: '',
+})
+const progressInfo = reactive({
+  progress: 0,
+})
+let checkTimer = null
+const publish = async () => {
+  dialogConfig.show = true
+  progressInfo.progress = 0
+  progressInfo.status = undefined
+  let result = await proxy.Request({
+    url: api.createHtml,
+  })
+  if (!result) {
+    return
+  }
+  checkProgress()
+  checkTimer = setInterval(() => {
+    checkProgress()
+  }, 1000)
+}
+const checkProgress = async () => {
+  let result = await proxy.Request({
+    url: api.checkProgress,
+    showLoading: false,
+  })
+  if (!result) {
+    return
+  }
+  if (result.data.result == 0) {
+    progressInfo.status = 'exception'
+    progressInfo.errorMsg = result.data.errorMsg
+  } else {
+    progressInfo.progress = result.data.progress
+  }
+  progressInfo.result = result.data.result
+  if (
+    (result.data.progress == 100 || result.data.result == 0) &&
+    checkTimer != null
+  ) {
+    clearInterval(checkTimer)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -292,6 +392,32 @@ watch(
       position: relative;
       // border:1px solid red;
       height: calc(100vh - 80px);
+    }
+  }
+}
+.progress-container {
+  .progress-panel {
+    display: flex;
+    justify-content: center;
+  }
+  .error {
+    color: red;
+    margin-top: 10px;
+    .info {
+      font-size: 13px;
+    }
+  }
+  .success {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 16px;
+    color: green;
+  }
+  .btn-panel {
+    text-align: center;
+    margin-top: 10px;
+    .btn {
+      margin: 0 auto;
     }
   }
 }

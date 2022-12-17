@@ -10,6 +10,7 @@
       :top="top"
       :width="width"
       :showCancel="showCancel"
+      @close="close"
     >
       <div class="dialog-body">
         <slot></slot>

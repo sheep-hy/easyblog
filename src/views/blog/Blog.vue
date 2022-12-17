@@ -81,10 +81,10 @@
         <div>
           <!-- 类型：{{ row.type == 1 ? '原创' : '转载' }} -->
           类型：
-          <span v-if="(row.type == 0)">原创</span
-          ><span v-if="(row.type == 1)">转载</span>
+          <span v-if="row.type == 0">原创</span
+          ><span v-if="row.type == 1">转载</span>
         </div>
-        <div v-if="(row.type == 1)">转载地址：{{ row.reprinUrl }}</div>
+        <div v-if="row.type == 1">转载地址：{{ row.reprinUrl }}</div>
       </template>
       <!-- 状态 -->
       <template #statusName="{ index, row }">
@@ -104,19 +104,28 @@
           href="javascript:void(0)"
           class="a-lick"
           @click="showEdit('update', row)"
+          v-if="(userInfo.userId==row.userId)"
           >修改</a
         >
+        <span v-else>--</span>
         <!-- @click="showEdit('update', row)" -->
         <el-divider direction="vertical" />
         <a href="javascript:void(0)" class="a-lick" @click="del(row.blogId)"
+        v-if="(userInfo.userId==row.userId)"
           >删除</a
         >
+        <span v-else>--</span>
         <el-divider direction="vertical" />
-        <a href="javascript:void(0)" class="a-lick" @click="showDetail(row.blogId)">预览</a>
+        <a
+          href="javascript:void(0)"
+          class="a-lick"
+          @click="showDetail(row.blogId)"
+          >预览</a
+        >
       </template>
     </Table>
     <BlogEdit ref="blogEditRef" @callback="loadDataList"></BlogEdit>
-    <BlogDetail ref="blogDetailRef" ></BlogDetail>
+    <BlogDetail ref="blogDetailRef"></BlogDetail>
   </div>
 </template>
 
@@ -126,6 +135,7 @@ import BlogEdit from './components/BlogEdit.vue'
 import BlogDetail from './components/BlogDetail.vue'
 
 const { proxy } = getCurrentInstance()
+const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
 // 表单相关
 const fromDataRef = ref()
 const searchFormData = reactive({})
@@ -199,10 +209,9 @@ const del = async (id) => {
   })
 }
 // 详情
-const blogDetailRef=ref(null)
-const showDetail=(id)=>{
+const blogDetailRef = ref(null)
+const showDetail = (id) => {
   blogDetailRef.value.showDetail(id)
-
 }
 </script>
 

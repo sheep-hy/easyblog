@@ -31,6 +31,7 @@
             <el-form-item label-width="10px">
               <el-button type="danger" @click="loadDataList">搜索</el-button>
               <el-button type="danger" @click="showEdit('add')"
+              v-if="userInfo.roleType==1"
                 >新增成员
               </el-button>
             </el-form-item>
@@ -225,7 +226,7 @@ import {
 } from 'vue'
 
 const { proxy } = getCurrentInstance()
-const userInfo = ref({ roleType: 1 })
+const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
 // 表单相关
 const fromDataRef = ref()
 const searchFormData = reactive({})

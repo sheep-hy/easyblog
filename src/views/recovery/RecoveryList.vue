@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="top-panel">
-      <el-form ref="searchFromDataRef" :model="searchFormData" label-position="right">
+      <el-form
+        ref="searchFromDataRef"
+        :model="searchFormData"
+        label-position="right"
+      >
         <el-row>
           <el-col :span="6">
             <el-form-item label="标题" label-width="50px">
@@ -37,9 +41,11 @@
       <!-- 文章信息 -->
       <template #blogInfo="{ index, row }">
         <div>标题：{{ row.title }}</div>
-        <div>文章类型：{{ row.blogType==0?'博客':'专题' }}
+        <div>
+          文章类型：{{ row.blogType == 0 ? '博客' : '专题' }}
           <el-divider direction="vertical" />
-          <span>{{ row.blogType==0?'分类':'专题' }}</span>,{{row.categoryName||'--'}}
+          <span>{{ row.blogType == 0 ? '分类' : '专题' }}</span
+          >,{{ row.categoryName || '--' }}
         </div>
         <div>作者：{{ row.nickName }}</div>
       </template>
@@ -56,13 +62,18 @@
         <div>更新时间：{{ row.lastUpdateTime }}</div>
       </template>
       <template #action="{ index, row }">
-        <div class="op"></div>
-        <a href="javascript:void(0)" class="a-lick"  @click="reductionBlog(row)">还原</a>
+      <template  v-if="row.userId == userInfo.userId || userInfo.roleType == 1">
+        <a href="javascript:void(0)" class="a-lick" @click="reductionBlog(row)"
+          >还原</a
+        >
         <el-divider direction="vertical" />
-        <a href="javascript:void(0)" class="a-lick" @click="del(row.blogId)">删除</a>
+        <a href="javascript:void(0)" class="a-lick" @click="del(row.blogId)"
+          >删除</a
+        >
+      </template>
+      <span v-else>--</span>
       </template>
     </Table>
-
   </div>
 </template>
 
@@ -76,15 +87,16 @@ import {
 } from 'vue'
 
 const { proxy } = getCurrentInstance()
-const userInfo = ref({ roleType: 1 })
+const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
 // 表单相关
 const searchFromDataRef = ref()
 const searchFormData = reactive({})
+
 const api = {
-  loadDataList: "/blog/loadRecoveryList",
-  delBlog: "/blog/delBlog",
-  reductionBlog: "/blog/reductionBlog",
-};
+  loadDataList: '/blog/loadRecoveryList',
+  delBlog: '/blog/delBlog',
+  reductionBlog: '/blog/reductionBlog',
+}
 // 封面需要定义插槽
 const columns = [
   { label: '封面', prop: 'cover', width: 80, scopedSlots: 'cover' },
@@ -92,7 +104,7 @@ const columns = [
   { label: '编辑器', prop: 'editorTypeName', width: 100 },
   // { label: '评论', prop: 'allowCommentTypeName', width: 100 },
   { label: '状态', prop: 'statusName', width: 80, scopedSlots: 'statusName' },
-  { label: '时间', prop: 'time', width: 200, scopedSlots: 'time' },
+  { label: '时间', prop: 'time', width: 280, scopedSlots: 'time' },
   { label: '操作', prop: 'action', width: 200, scopedSlots: 'action' },
 ]
 // 表格数据
@@ -118,7 +130,7 @@ const loadDataList = async () => {
 }
 
 // 还原
-const reductionBlog=(data)=>{
+const reductionBlog = (data) => {
   proxy.Confirm(
     `确认要恢复【${data.title}】吗？恢复后博客为草稿状态。`,
     async () => {
@@ -127,37 +139,32 @@ const reductionBlog=(data)=>{
         params: {
           blogId: data.blogId,
         },
-      });
+      })
       if (!result) {
-        return;
+        return
       }
-      proxy.Message.success("恢复成功");
-      loadDataList();
+      proxy.Message.success('恢复成功')
+      loadDataList()
     }
-  );
+  )
 }
 
 // 删除
-const del=(data)=>{
+const del = (data) => {
   proxy.Confirm(`确认要删除【${data.title}】吗，删除后无法找回？`, async () => {
     let result = await proxy.Request({
       url: api.delBlog,
       params: {
         blogId: data.blogId,
       },
-    });
+    })
     if (!result) {
-      return;
+      return
     }
-    proxy.Message.success("删除成功");
-    loadDataList();
-  });
+    proxy.Message.success('删除成功')
+    loadDataList()
+  })
 }
-
-
-
-
-
 </script>
 
 <style lang="scss" scoped></style>

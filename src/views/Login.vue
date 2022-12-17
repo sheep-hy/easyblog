@@ -62,7 +62,7 @@
 
 <script setup>
 import md5 from 'js-md5'
-import VueCookies from 'vue-cookies'
+// import VueCookies from 'vue-cookies'
 import {useRouter} from 'vue-router'
 import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
 
@@ -100,7 +100,7 @@ const rules = {
   ],
 }
 const init = () => {
-  const loginInfo = VueCookies.get('loginInfo')
+  const loginInfo = proxy.VueCookies.get('loginInfo')
   if (!loginInfo) {
     return
   }
@@ -119,7 +119,7 @@ const login = () => {
   fromDataRef.value.validate(async (valid) => {
     console.log(valid, 'valid')
     if (!valid) return
-    const cookiesInfo=VueCookies.get('loginInfo')
+    const cookiesInfo=proxy.VueCookies.get('loginInfo')
     let cookiesPassword=cookiesInfo==null?null:cookiesInfo.password
     // 不存在 需要MD5 
     if(cookiesPassword!==formData.password){
@@ -151,10 +151,10 @@ const login = () => {
       remenberMe: formData.remenberMe,
     }
     // 保存用户登录信息 不过期
-    VueCookies.set('userInfo', res.data, 0)
+    proxy.VueCookies.set('userInfo', res.data, 0)
     if (formData.remenberMe) {
       // cookies 保存用户信息 设置7天
-      VueCookies.set('loginInfo', loginInfo, '7d')
+      proxy.VueCookies.set('loginInfo', loginInfo, '7d')
     }
   })
 }

@@ -32,10 +32,11 @@
                 href="javascript:void(0)"
                 class="a-lick"
                 @click="showEdit('update', row)"
+                v-if="userInfo.userId==row.userId"
                 >修改</a
               >
               <el-divider direction="vertical" />
-              <a href="javascript:void(0)" @click="del(row)" class="a-lick">删除</a>
+              <a href="javascript:void(0)" @click="del(row)" class="a-lick" v-if="userInfo.userId==row.userId">删除</a>
             </template>
           </Table>
         </el-card>
@@ -96,14 +97,14 @@
                   <template v-else>
                     <a class="a-link" href="javascript:void(0)"  @click="showDetail(data)">预览</a>
                     <el-divider direction="vertical" />
-                    <!--  v-if="userInfo.userId == data.userId" -->
                     <a
                       class="a-link"
                       href="javascript:void(0)"
                       @click="editBlog('edit', data)"
+                      v-if="userInfo.userId == data.userId"
                       >修改</a
                     >
-                    <!-- <span v-else>--</span> -->
+                    <span v-else>--</span>
                     <el-divider direction="vertical" />
                     <!-- 
                         v-if="userInfo.userId == data.userId" -->
@@ -111,11 +112,11 @@
                       class="a-link"
                       href="javascript:void(0)"
                       @click="delBlog(data)"
+                      v-if="userInfo.userId == data.userId"
                       >删除</a
-                    >
-                    <!-- <span v-else>--</span> -->
+                    > 
+                    <span v-else>--</span>
                     <el-divider direction="vertical" />
-                    <!--    @click="editBlog('add', data)" -->
                     <a
                       class="a-link"
                       href="javascript:void(0)"
@@ -181,8 +182,9 @@ import {
 } from 'vue'
 import BlogEdit from './BlogEdit.vue'
 import BlogDetail from './BlogDetail.vue'
-import VueCookies from 'vue-cookies'
+
 const { proxy } = getCurrentInstance()
+const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
 const api = {
   loadDataList: '/category/loadCategory4Special',
   saveCategory: '/category/saveCategory4Special',

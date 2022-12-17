@@ -163,7 +163,7 @@ const saveMy = async () => {
         avatar: formData.value.avatar,
         nickName: formData.value.nickName,
         phone: formData.value.phone,
-        editoType: formData.value.editoType,
+        editorType: formData.value.editorType,
         profession: formData.value.profession,
         introduction: formData.value.introduction,
       },

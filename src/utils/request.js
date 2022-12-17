@@ -78,6 +78,13 @@ const request = (config) => {
       // console.log(response, 'response')
       const responseData = response.data
       if (responseData.status === 'error') {
+        if (responseData.code === 901) {
+          setTimeout(()=>{
+            //回到登录页面
+            router.push('/login')
+          },2000)
+          return Promise.reject('登录超时')
+        }
         // 把错误信息报出来
         if (config.errorCallback) {
           config.errorCallback();
@@ -86,12 +93,6 @@ const request = (config) => {
       } else {
         if (responseData.code === 200) {
           return responseData
-        } else if (responseData.code === 901) {
-          setTimeout(()=>{
-            //回到登录页面
-            router.push('/login')
-          },2000)
-          return Promise.reject('登录超时')
         }
 
       }

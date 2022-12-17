@@ -1,6 +1,10 @@
 <template>
   <div class="blog-categary">
-    <el-button type="danger" size="small" @click="showEdit('add')"
+    <el-button
+      type="danger"
+      size="small"
+      @click="showEdit('add')"
+      v-if="userInfo.roleType == 1"
       >新增分类</el-button
     >
     <Table
@@ -15,8 +19,7 @@
         <!-- <img :src="proxy.globalInfo.imgUrl + row.cover" /> -->
         <Cover :cover="row.cover"></Cover>
       </template>
-      <template #action="{ index, row }">
-        <div class="op"></div>
+      <template #action="{ index, row }"  v-if="userInfo.roleType == 1">
         <a
           href="javascript:void(0)"
           class="a-lick"
@@ -88,6 +91,7 @@ import {
   ref,
 } from 'vue'
 const { proxy } = getCurrentInstance()
+const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
 const api = {
   loadAllCategory: '/category/loadAllCategory4Blog',
   saveCategory: '/category/saveCategory4Blog',
