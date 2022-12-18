@@ -104,14 +104,17 @@
           href="javascript:void(0)"
           class="a-lick"
           @click="showEdit('update', row)"
-          v-if="(userInfo.userId==row.userId)"
+          v-if="userInfo.userId == row.userId"
           >修改</a
         >
         <span v-else>--</span>
         <!-- @click="showEdit('update', row)" -->
         <el-divider direction="vertical" />
-        <a href="javascript:void(0)" class="a-lick" @click="del(row.blogId)"
-        v-if="(userInfo.userId==row.userId)"
+        <a
+          href="javascript:void(0)"
+          class="a-lick"
+          @click="del(row.blogId)"
+          v-if="userInfo.userId == row.userId"
           >删除</a
         >
         <span v-else>--</span>

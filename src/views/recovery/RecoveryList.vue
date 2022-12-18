@@ -45,7 +45,7 @@
           文章类型：{{ row.blogType == 0 ? '博客' : '专题' }}
           <el-divider direction="vertical" />
           <span>{{ row.blogType == 0 ? '分类' : '专题' }}</span
-          >,{{ row.categoryName || '--' }}
+          >:{{ row.categoryName || '--' }}
         </div>
         <div>作者：{{ row.nickName }}</div>
       </template>

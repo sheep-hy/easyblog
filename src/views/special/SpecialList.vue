@@ -412,7 +412,7 @@ const showDetail=(data)=>{
 }
 .tree-panel {
   height: calc(100vh - 307px);
-  border: 1px solid red;
+  // border: 1px solid red;
   overflow: auto;
   .custom-node-style {
     flex: 1;

@@ -139,7 +139,7 @@ const clearTimer = () => {
 const autoSave = async () => {
   // 判断内容和标题 没有不需要保存
   if (
-    (blogFormData.value.title == '' && blogFormData.value.content == '') ||
+    (blogFormData.value.title == ''|| blogFormData.value.content == '') ||
     timer.value == null 
   ) {
     return

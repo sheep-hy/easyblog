@@ -251,7 +251,7 @@ const colors = [
 ]
 const dialogConfig = reactive({
   show: false,
-  title: '',
+  title: '发布',
 })
 const progressInfo = reactive({
   progress: 0,
@@ -403,6 +403,7 @@ const checkProgress = async () => {
   .error {
     color: red;
     margin-top: 10px;
+    text-align: center;
     .info {
       font-size: 13px;
     }
