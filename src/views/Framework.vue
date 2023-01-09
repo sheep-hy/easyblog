@@ -55,7 +55,10 @@
                         'sub-menu-title',
                         activePath === subMenu.path ? 'active' : '',
                       ]"
-                      v-if="(subMenu.roleType==null||subMenu.roleType==userInfo.roleType)"
+                      v-if="
+                        subMenu.roleType == null ||
+                        subMenu.roleType == userInfo.roleType
+                      "
                       >{{ subMenu.title }}</RouterLink
                     >
                   </li>
@@ -123,8 +126,8 @@ const route = useRoute()
 const api = {
   getUserInfo: '/getUserInfo',
   logout: '/logout',
-  createHtml: '/createHtml',
-  checkProgress: '/checkProgress',
+  createHtml: 'createHtml',
+  checkProgress: 'checkProgress',
 }
 const { proxy } = getCurrentInstance()
 // const userInfo = ref(proxy.VueCookies.get('userInfo') || {})
@@ -251,6 +254,7 @@ const colors = [
 ]
 const dialogConfig = reactive({
   show: false,
+  buttons: [],
   title: '发布',
 })
 const progressInfo = reactive({

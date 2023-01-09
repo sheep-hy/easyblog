@@ -356,7 +356,7 @@ const tagInputValue = ref('')
 // input框输入完成，input框隐藏 加号显示 数据追加到tags里面
 const tagInputResult = () => {
   showTagInput.value = false
-  if (!tagInputValue.value.trim().length) return
+  if (!tagInputValue.value.length) return
   if (blogFormData.value.tagList.indexOf(tagInputValue.value) === -1) {
     blogFormData.value.tagList.push(tagInputValue.value)
   }

@@ -34,9 +34,10 @@
                 @click="showEdit('update', row)"
                 v-if="userInfo.userId==row.userId"
                 >修改</a
-              >
+              > <span v-else>--</span>
               <el-divider direction="vertical" />
               <a href="javascript:void(0)" @click="del(row)" class="a-lick" v-if="userInfo.userId==row.userId">删除</a>
+              <span v-else>--</span>
             </template>
           </Table>
         </el-card>

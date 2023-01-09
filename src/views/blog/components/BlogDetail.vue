@@ -13,7 +13,13 @@
 </template>
 
 <script setup>
-import { defineComponent, getCurrentInstance, reactive, ref } from 'vue'
+import {
+  defineComponent,
+  getCurrentInstance,
+  reactive,
+  ref,
+  nextTick,
+} from 'vue'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/atom-one-light.css' //样式
 const api = {
@@ -42,11 +48,11 @@ const showDetail = async (blogId) => {
   blog.value = result.data
   nextTick(() => {
     //高亮显示
-    let blocks = document.querySelectorAll("pre code");
+    let blocks = document.querySelectorAll('pre code')
     blocks.forEach((block) => {
-      hljs.highlightBlock(block);
-    });
-  });
+      hljs.highlightBlock(block)
+    })
+  })
 }
 defineExpose({ showDetail })
 </script>
